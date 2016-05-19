@@ -1,0 +1,19 @@
+td {
+  height: 70px;
+  width: 70px;
+  background-color: black;
+  color: red;
+  text-align: center;
+}
+
+.miss {
+  background-color: yellow;
+}
+
+.hit {
+  background-color: red;
+}
+
+.reveal {
+  background-color: darkblue;
+}
