@@ -1,3 +1,6 @@
+// Size of the board
+var BOARDSIZE = 10;
+
 //Space undefined if empty
 var NOTHING = undefined;
 
@@ -10,11 +13,11 @@ var HIT = 1;
 //Changes space value to -1 when miss
 var MISS = -1;
 
-//Empty game board array
+//Empty game board array of BOARDSIZE x BOARDSIZE
 var board = [[],[],[],[],[],[],[],[],[],[]];
 
 //Torpedos left
-var torpedosLeft = 1;
+var torpedosLeft = 15;
 
 //When number of hits = 5, you win
 var numberOfHits = 0;
@@ -22,11 +25,14 @@ var numberOfHits = 0;
 //Creates idString global variable
 var idString;
 //Create a global variable for 1st board index
-// var row ;
+//var row;
 //Create a variable for 2nd board index
-// var column;
+//var column;
 //Create a variable for ships placed
 var shipsPlaced = 0;
+
+//Length of ship
+var shipsLength = 0;
 
 // Create a function that places 5 ships randomly
 // function placeShip(length) {
@@ -43,66 +49,106 @@ var shipsPlaced = 0;
 //     shipsPlaced = 0;
 // }// end of placeShip function
 
+// function placeShip() {
+//   //do/while loop that chooses random coordinates for rows & columns
+//   //Starts a while loop that loops as long as shipsPlaced is less than length
+//   column = Math.floor(Math.random() * 10);
+//   row = Math.floor(Math.random() * 10);
+//   while(shipsPlaced < 6) {
+//     if(isSpaceEmptyAroundPosition(board, row, column) === true){
+//       board[row][column] = SHIP;
+//       shipsPlaced++;
+//     }
+//     column = Math.floor(Math.random() * 10);
+//     row = Math.floor(Math.random() * 10);
+//   }
+// } // end of placeShip function
+
 function placeShip(length) {
-  //do/while loop that chooses random coordinates for rows & columns
-  var column = Math.floor(Math.random() * (length + 1));
-  var row = Math.floor(Math.random() * 10);
-  //Starts a while loop that loops as long as shipsPlaced is less than length
-  while(shipsPlaced < length){
-    // if statement that places a ship if there is no ship
-    if(board[row][column] != SHIP && checkEmptyShipSpace(row,column) === true){
-      //place a ship in an empty space
-      board[row][column] = SHIP;
-      //increase column count by 1
-      column++;
-      //increase shipsPlaced by 1
-      shipsPlaced++;
-    }
-    else{
-      //otherwise generate a new number for column and row
-      column = Math.floor(Math.random() * (length + 1));
-      row = Math.floor(Math.random() * 10);
-      //place a ship in the new column and row
-      board[row][column] = SHIP;
-      //increase column by 1
-      column++;
-      // increase shipsPlaced by 1
-      shipsPlaced++;
-    }
-  };
-  shipsPlaced = 0; // reset ships placed to 0
+  var row;
+  var column;
+  do {
+    row = Math.floor(Math.random() * 10);
+    column = Math.floor(Math.random() * (10 - length));
+    shipsPlaced++;
+  } while (isSpaceEmptyAroundPosition(board, row, column, length) === true && shipsPlaced < 6);
+
+  for (var shipColumn = column; shipColumn < (column + length); shipColumn++) {
+    board[row][shipColumn] = SHIP;
+  }
+
+  // if(column > 5){
+  //   column = length + 1;
+  // }
+  // if(column <= 5){
+  //   column = 10 - length;
+  // }
+  // //do/while loop that chooses random coordinates for rows & columns
+  // //Starts a while loop that loops as long as shipsPlaced is less than length
+  //
+  // while(shipsLength < length) {
+  //
+  //   if(isSpaceEmptyAroundPosition(board, row, column) === true){
+  //     board[row][column] = SHIP;
+  //     column++;
+  //     shipsLength++;
+  //   }
+  //   //column = Math.floor(Math.random() * (10));
+  //   //row = Math.floor(Math.random() * 10);
+  // }
 } // end of placeShip function
 
-function checkEmptyShipSpace(row, column){
+//isSpaceEmptyAroundPosition(board, row, column, length);
+//isSpaceEmptyAroundPosition(board, row, column, length);
+//isSpaceEmptyAroundPosition(board, row, column, length);
+//isSpaceEmptyAroundPosition(board, 1, 1, 5);
+
+function isSpaceEmptyAroundPosition(board, row, column, length) {
+
+  //Position of ship
+  if(board[row][column] === SHIP){
+    return false;
+  }
+
   //Top
-  if(board[row-1][column] != SHIP){
+  if(row >= 1 && board[row-1][column] === SHIP){
     return false;
   }
 
   //Bottom
-  if(board[row+1][column] != SHIP){
+  if(row <= 8 && board[row+1][column] === SHIP){
     return false;
   }
 
   //Left
-  if(board[row][column-1] != SHIP){
+   if(column >= 1 && board[row][column-length] === SHIP){
+     return false;
+   }
+
+   //Right
+   if(column <= 8 && board[row][column+length] === SHIP){
+     return false;
+   }
+
+  //Top Left Corner
+  if(row >= 1 && column >=1 && board[row-1][column-1] === SHIP){
     return false;
   }
 
-  //Right
-  if(board[row][column +1] != SHIP){
+  //Top Right Corner
+  if(row >= 1 && column <=8 && board[row-1][column+1] === SHIP){
+    return false;
+  }
+
+  // Bottom Right Corner
+  if(row <=8 && column <=8 && board[row+1][column+1] === SHIP){
+    return false;
+  }
+  // Bottom Left Corner
+  if(row <= 8 && column >=1 && board[row+1][column-1] ===  SHIP){
     return false;
   }
   return true;
-}
-
-
-function setAllShips(){
-  placeShip(4);
-  placeShip(4);
-  placeShip(4);
-  placeShip(4);
-
 }
 
 
@@ -172,7 +218,13 @@ $(document).ready(function() {
       shootTorpedo()
     }//End of on click function
   );//End of on click
-setAllShips();
+placeShip(5);
+placeShip(5);
+placeShip(5);
+placeShip(5);
+// placeShip(5);
+
+
 
 
 
